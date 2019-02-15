@@ -1,17 +1,38 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, protocol, BrowserWindow} = require('electron')
+const path = require('path')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+protocol.registerSchemesAsPrivileged([{scheme: 'rocket', privileges: { standard: true, secure: true, bypassCSP: true, corsEnabled: true, allowServiceWorkers: true}}])
+
 function createWindow () {
+
+  // protocol.registerFileProtocol('rocket', (request, callback) => {
+  //   console.log(request.url);
+  //   const wpath = path.resolve(__dirname, 'worker', 'worker_test.js');
+  //   console.log(wpath);
+  //   callback(wpath);
+  // });
+
+  // protocol.registerHttpProtocol('rocket', (request, callback) => {
+  //   console.log(request)
+  //   callback({url: request.url, method: request.method})
+  // })
+
+
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({width: 800, height: 600, webPreferences: {
+    nodeIntegration: true,
+    nodeIntegrationInWorker: true,
+    webviewTag: true
+  }})
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
-
+  // mainWindow.loadFile('index.html')
+  mainWindow.loadURL('http://localhost:9090')
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 

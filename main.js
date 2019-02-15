@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -30,10 +30,30 @@ function createWindow () {
   })
 }
 
+function setup() {
+  ipcMain.on('rocket', (event, args) => {
+    let startTime = new Date()
+    let endTime = startTime;
+    console.log(`${startTime.toLocaleTimeString()}: Started processing in main process`)
+    while(true) {
+      if ((endTime = new Date()) > startTime.getTime() + 1000 * 7)
+        break
+    }
+    console.log(`${new Date().toLocaleTimeString()}: Done processing in main process`)
+  })
+
+  ipcMain.on('ship', (event, args) => {
+    event.sender.send('ship', 'Answer from main process')
+  })
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', () => {
+  createWindow()
+  setup()
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
